@@ -205,3 +205,11 @@ html {
     font-weight: 400;
     font-style: normal;
 }
+
+body.body--light {
+    @apply bg-slate-200;
+}
+
+body.body--dark {
+    @apply bg-gray-800;
+}

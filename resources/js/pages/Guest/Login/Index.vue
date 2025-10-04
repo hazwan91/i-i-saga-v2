@@ -7,7 +7,7 @@ import { onMounted, ref } from 'vue';
 onMounted(() => {
     setTimeout(() => {
         animated.value = true;
-    }, 500);
+    }, 1000);
 
     form.saga = props.sagas.find((item) => item.year === props.currentYear)?.slug || null;
 });
@@ -30,7 +30,7 @@ const isPwd = ref(true);
 
 const login = () => {
     $q.loading.show();
-    form.post('/login', {
+    form.post(login.store(), {
         onError: (err) => {
             $q.notify({
                 type: 'negative',
@@ -60,13 +60,13 @@ const login = () => {
                             <div class="flex w-full flex-col items-center justify-center gap-5 opacity-100">
                                 <div class="mb-5 grid grid-cols-3 gap-10 text-center">
                                     <img src="images/state_logo_kbss.png" alt="" class="w-[110px] opacity-0" :class="{
-                                        'animate__animated animate__backInLeft opacity-100': animated,
+                                        'animate__animated animate__backInLeft animate__slow opacity-100': animated,
                                     }" />
                                     <img src="images/logo_msn.png" alt="" class="w-[108px] pt-[3px] opacity-0" :class="{
-                                        'animate__animated animate__backInUp opacity-100': animated,
+                                        'animate__animated animate__backInUp animate__slow opacity-100': animated,
                                     }" />
                                     <img src="images/saga_logo.png" alt="" class="w-[100px] pt-[5px] opacity-0" :class="{
-                                        'animate__animated animate__backInRight opacity-100': animated,
+                                        'animate__animated animate__backInRight animate__slow opacity-100': animated,
                                     }" />
                                 </div>
                                 <div>

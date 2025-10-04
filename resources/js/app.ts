@@ -12,7 +12,7 @@ import '@quasar/extras/mdi-v7/mdi-v7.css'
 
 import 'quasar/src/css/index.sass'
 
-import CustomLoading from './components/CustomLoading.vue';
+import CustomLoading from '@/components/CustomLoading.vue';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -34,6 +34,7 @@ createInertiaApp({
                 },
                 iconSet: quasarIconSet,
                 config: {
+                    dark: false,
                     // brand: {
                     //     primary: '#e46262',
                     // },

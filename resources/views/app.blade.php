@@ -22,7 +22,7 @@
     @inertiaHead
 </head>
 
-<body class="font-sans antialiased h-screen bg-slate-200">
+<body class="font-sans antialiased h-screen">
     @inertia
 </body>
 
