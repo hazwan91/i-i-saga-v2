@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\Saga;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -19,9 +20,11 @@ class AuthenticatedSessionController extends Controller
      */
     public function create(Request $request): Response
     {
+        $sagas = Saga::query()->select('id', 'year', 'name')->orderByDesc('year')->get();
         return Inertia::render('Guest/Login/Index', [
             'canResetPassword' => Route::has('password.request'),
             'status' => $request->session()->get('status'),
+            'sagas' => $sagas
         ]);
     }
 

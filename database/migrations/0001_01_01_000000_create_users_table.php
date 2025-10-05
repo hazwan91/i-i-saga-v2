@@ -1,11 +1,13 @@
 <?php
 
+use App\Models\AppointStatus;
+use App\Models\Department;
+use App\Models\Station;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -13,10 +15,41 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            $table->string('slug')->unique();
+            $table->string('role');
+            $table->string('type', 20);
+            $table->string('other_type')->nullable();
+            $table->string('ic', 14)->nullable()->unique();
+            $table->string('passport', 100)->nullable()->unique();
             $table->string('name');
-            $table->string('email')->unique();
+            $table->string('email')->nullable()->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->string('password')->nullable();
+            $table->timestamp('password_last_generated_at')->nullable();
+            $table->string('no_hp')->nullable();
+            $table->date('tarikh_lantikan')->nullable();
+            $table->date('tarikh_lapor_diri')->nullable();
+            $table->date('tarikh_tamat_lantikan')->nullable();
+            $table->string('tempoh_lantikan')->nullable();
+            $table->string('tindakan')->nullable();
+            $table->text('catatan')->nullable();
+            $table->string('department_code', 30)->nullable();
+            $table->string('department_desc')->nullable();
+            $table->string('station_code', 30)->nullable();
+            $table->string('station_desc')->nullable();
+            $table->string('report_department_code', 30)->nullable();
+            $table->string('report_department_desc')->nullable();
+            $table->string('report_station_code', 30)->nullable();
+            $table->string('report_station_desc')->nullable();
+            $table->string('jawatan')->nullable();
+            $table->string('schema')->nullable();
+            $table->string('gred', 30)->nullable();
+            $table->string('acting_post')->nullable();
+            $table->json('user_image')->nullable();
+            $table->boolean('is_blacklist')->default(false);
+            $table->text('blacklist_remark')->nullable();
+            $table->boolean('active')->default(true);
+            $table->timestamp('last_login')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
