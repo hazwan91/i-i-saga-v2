@@ -7,6 +7,7 @@ use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class LoginRequest extends FormRequest
@@ -27,8 +28,9 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'string', 'email'],
+            'ic' => ['required', 'numeric', 'digits:12'],
             'password' => ['required', 'string'],
+            'saga' => ['required', Rule::exists('sagas', 'slug')],
         ];
     }
 
@@ -42,13 +44,13 @@ class LoginRequest extends FormRequest
         $this->ensureIsNotRateLimited();
 
         /** @var User|null $user */
-        $user = Auth::getProvider()->retrieveByCredentials($this->only('email', 'password'));
+        $user = Auth::getProvider()->retrieveByCredentials($this->only('ic', 'password'));
 
         if (! $user || ! Auth::getProvider()->validateCredentials($user, $this->only('password'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
+                'ic' => trans('auth.failed'),
             ]);
         }
 
@@ -87,7 +89,7 @@ class LoginRequest extends FormRequest
     {
         return $this->string('email')
             ->lower()
-            ->append('|'.$this->ip())
+            ->append('|' . $this->ip())
             ->transliterate()
             ->value();
     }

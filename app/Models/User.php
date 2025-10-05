@@ -14,7 +14,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\LogOptions;
 
-class User extends Authenticatable implements FilamentUser
+class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
@@ -115,11 +115,6 @@ class User extends Authenticatable implements FilamentUser
             'is_blacklist' => 'boolean',
             'active' => 'boolean',
         ];
-    }
-
-    public function canAccessPanel(Panel $panel): bool
-    {
-        return $this->active && !$this->is_blacklist;
     }
 
     public function sports()

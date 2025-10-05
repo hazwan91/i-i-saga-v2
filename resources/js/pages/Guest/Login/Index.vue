@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import GuestLayout from '@/layouts/GuestLayout.vue';
 import { useForm, usePage } from '@inertiajs/vue3';
 import { useQuasar } from 'quasar';
