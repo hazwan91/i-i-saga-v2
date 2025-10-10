@@ -4,11 +4,7 @@ use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome');
-})->name('home');
-
-Route::middleware('guest')->group(function () {
+Route::middleware(['guest'])->name('guest.')->group(function () {
     Route::get('login', [AuthController::class, 'create'])
         ->name('login.create');
 
@@ -16,7 +12,12 @@ Route::middleware('guest')->group(function () {
         ->name('login.store');
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified'])->name('auth.')->group(function () {
+    Route::resource('', \App\Http\Controllers\Auth\Home\IndexController::class)
+        ->only(['index'])
+        ->names([
+            'index' => 'home.index'
+        ]);
 
     Route::post('logout', [AuthController::class, 'destroy'])
         ->name('logout');

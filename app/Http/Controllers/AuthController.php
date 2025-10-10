@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\UserType;
 use App\Models\AppointStatus;
 use App\Models\Department;
 use App\Models\Saga;
 use App\Models\Station;
 use App\Models\User;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Http\RedirectResponse;
@@ -35,9 +37,11 @@ class AuthController extends Controller
      */
     public function create(Request $request)
     {
+        $currentYear = Carbon::now()->format('Y');
         $sagas = Saga::query()->select('id', 'year', 'name')->orderByDesc('year')->get();
         return Inertia::render('Guest/Login/Index', [
-            'sagas' => $sagas
+            'sagas' => $sagas,
+            'currentYear' => $currentYear,
         ]);
     }
 
@@ -49,11 +53,11 @@ class AuthController extends Controller
         $vdata = $request->merge([
             'ic' => Str::replace('-', '', $request->ic)
         ])->validate([
-            'ic' => ['bail', 'required', 'numeric', 'digits:12'],
-            'password' => ['bail', 'required', 'string'],
-            'saga' => ['bail', 'required', Rule::exists('sagas', 'slug')],
-            'remember' => ['bail', 'required', 'boolean']
-        ]);
+                    'ic' => ['bail', 'required', 'numeric', 'digits:12'],
+                    'password' => ['bail', 'required', 'string'],
+                    'saga' => ['bail', 'required', Rule::exists('sagas', 'id')],
+                    'remember' => ['bail', 'required', 'boolean']
+                ]);
 
         $this->ensureIsNotRateLimited();
 
@@ -69,7 +73,7 @@ class AuthController extends Controller
             return back()->withInput()->with('fail', 'Akaun terdapat ralat. Sila hubungi Jabatan Perkhidmatan Awam Negeri untuk maklumat lanjut');
         }
 
-        if (!in_array($userInDb->type, ['SM2', 'NON_SM2', 'OTHER'])) {
+        if (!in_array($userInDb->type, [UserType::SM2, UserType::NON_SM2])) {
             RateLimiter::hit($this->throttleKey());
             return back()->withInput()->with('fail', 'Akaun terdapat ralat. Sila hubungi Jabatan Perkhidmatan Awam Negeri untuk maklumat lanjut');
         }
@@ -79,7 +83,7 @@ class AuthController extends Controller
             return back()->withInput()->with('fail', 'Akaun anda tidak diaktifkan dan tidak dibenarkan log masuk ke dalam sistem ini. Sila hubungi Jabatan Perkhidmatan Awam Negeri untuk maklumat lanjut');
         }
 
-        if ($userInDb->type === 'SM2') {
+        if ($userInDb->type === UserType::SM2) {
             if (config('app.env') === 'production') {
                 try {
                     $result = DB::connection('sm2viewlogin')->select('exec usp_ValidatePwd ?,?', [$vdata['ic'], $vdata['password']]);
@@ -210,10 +214,10 @@ class AuthController extends Controller
         }
 
         $saga = Saga::query()->selectRaw('
-            sagas.slug,
+            sagas.id,
             sagas.name,
             year,
-            districts.slug as host_district_slug,
+            districts.id as host_district_id,
             districts.name as host_district_name,
             date_start_rs,
             date_end_rs,
@@ -231,7 +235,7 @@ class AuthController extends Controller
             date_end_rc_saga
         ')
             ->join('districts', 'sagas.host_district_id', '=', 'districts.id')
-            ->where('sagas.slug', $vdata['saga'])
+            ->where('sagas.id', $vdata['saga'])
             ->first();
         if ($saga === null) {
             RateLimiter::hit($this->throttleKey());
@@ -288,7 +292,7 @@ class AuthController extends Controller
      */
     public function ensureIsNotRateLimited(): void
     {
-        if (! RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
+        if (!RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
             return;
         }
 

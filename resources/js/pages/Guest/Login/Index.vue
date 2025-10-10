@@ -1,6 +1,6 @@
-<script setup lang="ts">
+<script setup>
 import GuestLayout from '@/layouts/GuestLayout.vue';
-import { store } from '@/routes/login';
+import { store } from '@/routes/guest/login';
 import { useForm, usePage } from '@inertiajs/vue3';
 import { useQuasar } from 'quasar';
 import { onMounted, ref } from 'vue';
@@ -10,12 +10,14 @@ onMounted(() => {
         animated.value = true;
     }, 1000);
 
-    form.saga =
-        props.sagas.find((item) => item.year === props.currentYear)?.slug ||
-        null;
+    const selectedSaga = props.sagas.find(
+        (item) => item.year === props.currentYear,
+    );
+    form.saga = selectedSaga ? selectedSaga.id : null;
 });
 
 const props = defineProps({
+    currentYear: String,
     sagas: Array,
 });
 
@@ -207,14 +209,14 @@ const login = () => {
                             <q-select
                                 filled
                                 v-model="form.saga"
+                                label="Pilih Program"
                                 :error="form.errors.saga ? true : false"
                                 :error-message="form.errors.saga"
                                 :options="sagas"
                                 option-label="name"
-                                option-value="slug"
+                                option-value="id"
                                 emit-value
                                 map-options
-                                label="Pilih Program"
                             />
                             <q-checkbox
                                 v-model="form.remember"

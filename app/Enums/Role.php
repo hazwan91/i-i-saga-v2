@@ -8,7 +8,7 @@ use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
 use Illuminate\Support\Str;
 
-enum Role: string implements HasLabel, HasDescription, HasColor, HasIcon
+enum Role: string
 {
     case SUPER_ADMIN = 'SUPER_ADMIN';
     case ADMIN = 'ADMIN';

@@ -7,7 +7,7 @@ use Filament\Support\Contracts\HasDescription;
 use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
 
-enum UserType: string implements HasLabel, HasDescription, HasColor, HasIcon
+enum UserType: string
 {
     case SM2 = 'SM2';
     case NON_SM2 = 'NON_SM2';
