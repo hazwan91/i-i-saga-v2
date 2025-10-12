@@ -14,8 +14,12 @@ class RaceController extends Controller
      */
     public function index()
     {
-        $perPage = request()->input('per_page', 10);
-        $races = Race::query()->select('id', 'name')->paginate($perPage)->withQueryString();
+        $races = Race::query()
+            ->when(request()->query('carian'), function ($query) {
+                $query->where('name', 'like', '%' . request()->query('carian') . '%');
+            })
+            ->select('id', 'name')
+            ->paginate(request()->query('per_page'), ['*'], 'page')->withQueryString();
         return Inertia::render('Auth/Race/Index', compact('races'));
     }
 
