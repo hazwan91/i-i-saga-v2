@@ -207,10 +207,10 @@ html {
     font-style: normal;
 }
 
-body.body--light {
+.body--light {
     @apply bg-slate-200;
 }
 
-body.body--dark {
-    @apply bg-gray-800;
-}
+/* .body--dark {
+    @apply bg-black text-white;
+} */

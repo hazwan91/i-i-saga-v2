@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Race;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class RaceController extends Controller
 {
@@ -13,7 +14,9 @@ class RaceController extends Controller
      */
     public function index()
     {
-        //
+        $perPage = request()->input('per_page', 10);
+        $races = Race::query()->select('id', 'name')->paginate($perPage)->withQueryString();
+        return Inertia::render('Auth/Race/Index', compact('races'));
     }
 
     /**

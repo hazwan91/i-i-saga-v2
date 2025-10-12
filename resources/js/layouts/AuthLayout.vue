@@ -75,10 +75,10 @@ const toggleLeftDrawer = () => {
 
 <template>
     <!-- <q-layout view="hHh lpR fFf" class="bg-grey-1"> -->
-    <q-layout view="hHh Lpr fFf" class="bg-slate-200">
+    <q-layout view="hHh Lpr fFf" class="">
         <q-header
-            class="text-grey-8 q-py-xs bg-white shadow-md"
-            height-hint="58"
+            :class="`text-grey-8 q-py-xs ${$q.dark.isActive ? 'bg-amber-500' : 'bg-white'} h-[78px] pt-4 shadow-md`"
+            height-hint="78"
         >
             <q-toolbar>
                 <q-btn
@@ -100,11 +100,14 @@ const toggleLeftDrawer = () => {
                     @click.prevent="router.get('')"
                 >
                     <q-img src="/images/logo_msn.png" width="28px"></q-img>
-                    <q-img src="/images/saga_logo.png" width="28px"></q-img>
                     <q-toolbar-title shrink class="text-weight-bold text-xl">
                         I-SAGA
-                        <span class="text-[14px] text-amber-500">v2</span>
+                        <span
+                            :class="`text-[14px] ${$q.dark.isActive ? '' : 'text-amber-500'}`"
+                            >v2</span
+                        >
                     </q-toolbar-title>
+                    <q-img src="/images/saga_logo.png" width="28px"></q-img>
                 </q-btn>
 
                 <q-space />
@@ -114,10 +117,7 @@ const toggleLeftDrawer = () => {
                     <q-btn class="YL__toolbar-input-btn" color="grey-3" text-color="grey-8" icon="mdi-magnify" unelevated />
                 </div> -->
 
-                <q-space />
-
                 <div class="q-gutter-sm row no-wrap items-center">
-                    <q-badge outline color="primary" label="" />
                     <q-btn
                         round
                         dense
@@ -133,6 +133,16 @@ const toggleLeftDrawer = () => {
                             2
                         </q-badge>
                         <q-tooltip>Notifications</q-tooltip>
+                    </q-btn>
+                    <q-btn
+                        round
+                        dense
+                        flat
+                        color="grey-8"
+                        icon="mdi-theme-light-dark"
+                        @click.prevent="$q.dark.toggle()"
+                    >
+                        <q-tooltip>Mod Gelap</q-tooltip>
                     </q-btn>
                     <q-btn-dropdown flat icon="mdi-account">
                         <q-list>
@@ -175,18 +185,17 @@ const toggleLeftDrawer = () => {
         <q-drawer
             v-model="leftDrawerOpen"
             show-if-above
-            bordered
-            class="bg-white"
-            :width="240"
+            class="shadow-md"
+            :width="320"
         >
             <q-scroll-area class="fit">
                 <q-list padding>
                     <q-item
                         v-ripple
                         clickable
-                        :active="''"
-                        :href="''"
-                        @click.prevent="router.get('')"
+                        :active="route.is('/')"
+                        href="/"
+                        @click.prevent="route.visit({ path: '/' })"
                     >
                         <q-item-section avatar>
                             <q-icon color="grey" name="mdi-home" />
@@ -196,125 +205,168 @@ const toggleLeftDrawer = () => {
                         </q-item-section>
                     </q-item>
 
-                    <!-- <q-expansion-item icon="mdi-finance" label="Dashboard">
-                        <q-item v-ripple clickable class="ml-8">
-                            <q-item-section avatar>
-                                <q-icon color="grey" name="mdi-home" />
-                            </q-item-section>
-                            <q-item-section>
-                                <q-item-label>Keseluruhan</q-item-label>
-                            </q-item-section>
-                        </q-item>
-                    </q-expansion-item> -->
-
-                    <q-separator class="q-mt-md q-mb-xs" />
-
+                    <!-- <q-separator class="q-mt-md q-mb-xs" /> -->
+                    <!-- 
                     <q-item-label
                         header
                         class="text-weight-bold text-uppercase"
                     >
                         Dashboard
-                    </q-item-label>
+                    </q-item-label> -->
 
-                    <!-- <q-item v-ripple clickable :active="route().current('auth.saga.dashboard.overall.*')"
-                        :href="route('auth.saga.dashboard.overall.index')"
-                        @click.prevent="router.get(route('auth.saga.dashboard.overall.index'))">
-                        <q-item-section avatar>
-                            <q-icon color="grey" name="mdi-finance" />
-                        </q-item-section>
-                        <q-item-section>
-                            <q-item-label>Keseluruhan</q-item-label>
-                        </q-item-section>
-                    </q-item> -->
+                    <!-- <q-separator class="q-mt-md q-mb-xs" /> -->
 
-                    <q-separator class="q-mt-md q-mb-xs" />
-
-                    <q-item-label
-                        header
-                        class="text-weight-bold text-uppercase"
+                    <q-expansion-item
+                        icon="mdi-text-box-edit"
+                        label="Admin"
+                        :default-opened="route.is('/admin/*')"
                     >
-                        Pendaftaran
-                    </q-item-label>
-
-                    <!-- <q-expansion-item icon="mdi-text-box-edit" label="Jawatankuasa"
-                        :default-opened="route().current('auth.saga.registration.commitee.*')">
-                        <q-item :inset-level="1" v-ripple clickable
-                            :active="route().current('auth.saga.registration.commitee.role.*')"
-                            :href="route('auth.saga.registration.commitee.role.index')"
-                            @click.prevent="router.get(route('auth.saga.registration.commitee.role.index'))">
+                        <q-item
+                            :inset-level="1"
+                            v-ripple
+                            clickable
+                            :active="route.is('/admin/pengguna*')"
+                            href="/admin/pengguna"
+                            @click.prevent="
+                                route.visit({ path: '/admin/pengguna' })
+                            "
+                        >
+                            <q-item-section avatar>
+                                <q-icon color="grey" name="mdi-account-group" />
+                            </q-item-section>
                             <q-item-section>
-                                <q-item-label>Jawatan</q-item-label>
+                                <q-item-label>Pengguna</q-item-label>
                             </q-item-section>
                         </q-item>
-                        <q-item :inset-level="1" v-ripple clickable
-                            :active="route().current('auth.saga.registration.commitee.individual.*')"
-                            :href="route('auth.saga.registration.commitee.individual.index')"
-                            @click.prevent="router.get(route('auth.saga.registration.commitee.individual.index'))">
+
+                        <q-item
+                            :inset-level="1"
+                            v-ripple
+                            clickable
+                            :active="route.is('/admin/taraf-lantikan*')"
+                            href="/admin/taraf-lantikan"
+                            @click.prevent="
+                                route.visit({ path: '/admin/taraf-lantikan' })
+                            "
+                        >
+                            <q-item-section avatar>
+                                <q-icon color="grey" name="mdi-account-group" />
+                            </q-item-section>
                             <q-item-section>
-                                <q-item-label>Individu</q-item-label>
+                                <q-item-label>Taraf Lantikan</q-item-label>
                             </q-item-section>
                         </q-item>
-                    </q-expansion-item> -->
 
-                    <!-- <q-item -->
-                    <!--     :inset-level="1" -->
-                    <!--     v-ripple -->
-                    <!--     clickable -->
-                    <!--     :active="route().current('auth.saga.registration.technical.*')" -->
-                    <!--     :href="route('auth.saga.registration.technical.index')" -->
-                    <!--     @click.prevent="router.get(route('auth.saga.registration.technical.index'))" -->
-                    <!-- > -->
-                    <!--     <q-item-section> -->
-                    <!--         <q-item-label>Teknikal</q-item-label> -->
-                    <!--     </q-item-section> -->
-                    <!-- </q-item> -->
-                    <!-- <q-item -->
-                    <!--     v-ripple -->
-                    <!--     clickable -->
-                    <!--     :active="route().current('auth.saga.registration.contingent.*')" -->
-                    <!--     :href="route('auth.saga.registration.contingent.index')" -->
-                    <!--     @click.prevent="router.get(route('auth.saga.registration.contingent.index'))" -->
-                    <!-- > -->
-                    <!--     <q-item-section avatar> -->
-                    <!--         <q-icon color="grey" name="mdi-text-box-edit" /> -->
-                    <!--     </q-item-section> -->
-                    <!--     <q-item-section> -->
-                    <!--         <q-item-label>Kontinjen</q-item-label> -->
-                    <!--     </q-item-section> -->
-                    <!-- </q-item> -->
+                        <q-item
+                            :inset-level="1"
+                            v-ripple
+                            clickable
+                            :active="route.is('/admin/bangsa*')"
+                            href="/admin/bangsa"
+                            @click.prevent="
+                                route.visit({ path: '/admin/bangsa' })
+                            "
+                        >
+                            <q-item-section avatar>
+                                <q-icon color="grey" name="mdi-account-group" />
+                            </q-item-section>
+                            <q-item-section>
+                                <q-item-label>Bangsa</q-item-label>
+                            </q-item-section>
+                        </q-item>
 
-                    <q-item-label
-                        header
-                        class="text-weight-bold text-uppercase"
-                    >
-                        Admin
-                    </q-item-label>
+                        <q-item
+                            :inset-level="1"
+                            v-ripple
+                            clickable
+                            :active="route.is('/admin/jenis-agensi*')"
+                            href="/admin/jenis-agensi"
+                            @click.prevent="
+                                route.visit({ path: '/admin/jenis-agensi' })
+                            "
+                        >
+                            <q-item-section avatar>
+                                <q-icon color="grey" name="mdi-account-group" />
+                            </q-item-section>
+                            <q-item-section>
+                                <q-item-label>Jenis Agensi</q-item-label>
+                            </q-item-section>
+                        </q-item>
 
-                    <!-- <q-item v-ripple clickable :active="route().current('auth.admin.user.index.*')"
-                        :href="route('auth.admin.user.index')"
-                        @click.prevent="router.get(route('auth.admin.user.index'))">
-                        <q-item-section avatar>
-                            <q-icon color="grey" name="mdi-finance" />
-                        </q-item-section>
-                        <q-item-section>
-                            <q-item-label>Pengguna</q-item-label>
-                        </q-item-section>
-                    </q-item>
+                        <q-item
+                            :inset-level="1"
+                            v-ripple
+                            clickable
+                            :active="route.is('/admin/agensi*')"
+                            href="/admin/agensi"
+                            @click.prevent="
+                                route.visit({ path: '/admin/agensi' })
+                            "
+                        >
+                            <q-item-section avatar>
+                                <q-icon color="grey" name="mdi-account-group" />
+                            </q-item-section>
+                            <q-item-section>
+                                <q-item-label>Agensi</q-item-label>
+                            </q-item-section>
+                        </q-item>
 
-                    <q-item v-ripple clickable :active="route().current('auth.admin.race.index.*')"
-                        :href="route('auth.admin.race.index')"
-                        @click.prevent="router.get(route('auth.admin.race.index'))">
-                        <q-item-section avatar>
-                            <q-icon color="grey" name="mdi-finance" />
-                        </q-item-section>
-                        <q-item-section>
-                            <q-item-label>Bangsa</q-item-label>
-                        </q-item-section>
-                    </q-item> -->
+                        <q-item
+                            :inset-level="1"
+                            v-ripple
+                            clickable
+                            :active="route.is('/admin/stesen*')"
+                            href="/admin/stesen"
+                            @click.prevent="
+                                route.visit({ path: '/admin/stesen' })
+                            "
+                        >
+                            <q-item-section avatar>
+                                <q-icon color="grey" name="mdi-account-group" />
+                            </q-item-section>
+                            <q-item-section>
+                                <q-item-label>Stesen</q-item-label>
+                            </q-item-section>
+                        </q-item>
+
+                        <q-item
+                            :inset-level="1"
+                            v-ripple
+                            clickable
+                            :active="route.is('/admin/zon*')"
+                            href="/admin/zon"
+                            @click.prevent="route.visit({ path: '/admin/zon' })"
+                        >
+                            <q-item-section avatar>
+                                <q-icon color="grey" name="mdi-account-group" />
+                            </q-item-section>
+                            <q-item-section>
+                                <q-item-label>Zon</q-item-label>
+                            </q-item-section>
+                        </q-item>
+
+                        <q-item
+                            :inset-level="1"
+                            v-ripple
+                            clickable
+                            :active="route.is('/admin/daerah*')"
+                            href="/admin/daerah"
+                            @click.prevent="
+                                route.visit({ path: '/admin/daerah' })
+                            "
+                        >
+                            <q-item-section avatar>
+                                <q-icon color="grey" name="mdi-account-group" />
+                            </q-item-section>
+                            <q-item-section>
+                                <q-item-label>Daerah</q-item-label>
+                            </q-item-section>
+                        </q-item>
+                    </q-expansion-item>
 
                     <q-separator class="q-mt-md q-mb-lg" />
 
-                    <div class="q-px-md text-grey-9">
+                    <div class="q-px-md text-grey-6">
                         <div
                             class="row q-gutter-x-sm q-gutter-y-xs items-center"
                         >
@@ -333,42 +385,47 @@ const toggleLeftDrawer = () => {
             <div
                 class="scrollable-container space-y-10 px-3 pt-6 pb-20 sm:px-10"
             >
-                <q-breadcrumbs
-                    class="text-grey"
-                    active-color="primary"
-                    v-if="$slots.breadcrumbs"
-                >
-                    <template v-slot:separator>
-                        <q-icon
-                            size="1.2em"
-                            name="mdi-arrow-right"
-                            color="primary"
-                        />
-                    </template>
+                <div class="space-y-4">
+                    <q-breadcrumbs
+                        class="text-grey"
+                        active-color="primary"
+                        v-if="$slots.breadcrumbs"
+                    >
+                        <template v-slot:separator>
+                            <q-icon
+                                size="1.2em"
+                                name="mdi-arrow-right"
+                                color="primary"
+                            />
+                        </template>
 
-                    <slot name="breadcrumbs" />
-                </q-breadcrumbs>
+                        <slot name="breadcrumbs" />
+                    </q-breadcrumbs>
 
-                <div
-                    class="row items-center justify-between"
-                    v-if="$slots.title || $slots.headerActions"
-                >
-                    <div>
-                        <h5 class="font-semibold">
-                            <slot name="title" />
-                        </h5>
-                    </div>
-                    <div>
-                        <slot name="headerActions" />
+                    <div
+                        class="row items-center justify-between"
+                        v-if="$slots.title || $slots.headerActions"
+                    >
+                        <div>
+                            <h5 class="font-semibold uppercase">
+                                <slot name="title" />
+                            </h5>
+                            <h6 class="text-grey-7 font-semibold">
+                                <slot name="subtitle" />
+                            </h6>
+                        </div>
+                        <div>
+                            <slot name="headerActions" />
+                        </div>
                     </div>
                 </div>
 
                 <slot />
 
                 <div class="flex justify-center">
-                    <span class="text-gray-500"
-                        >&copy; 2025 HakCipta Terpelihara; Majlis Sukan Negeri
-                        Sabah</span
+                    <span class="text-sm text-gray-500 italic"
+                        >&copy; 2025 HakCipta Terpelihara; Jabatan Perkhidmatan
+                        Awam Negeri Sabah</span
                     >
                 </div>
             </div>

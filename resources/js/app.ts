@@ -1,16 +1,15 @@
+import 'quasar/src/css/index.sass';
 import '../css/app.css';
 
+import { routeHelper } from '@/utils/route';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
+import { Dialog, Loading, Notify, Quasar } from 'quasar';
+import quasarIconSet from 'quasar/icon-set/svg-mdi-v7';
 import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
-import { initializeTheme } from './composables/useAppearance';
-import { Quasar, Dialog, Notify, Loading } from 'quasar'
-import quasarIconSet from 'quasar/icon-set/svg-mdi-v7'
 
-import '@quasar/extras/mdi-v7/mdi-v7.css'
-
-import 'quasar/src/css/index.sass'
+import '@quasar/extras/mdi-v7/mdi-v7.css';
 
 import CustomLoading from '@/components/CustomLoading.vue';
 
@@ -24,7 +23,7 @@ createInertiaApp({
             import.meta.glob<DefineComponent>('./pages/**/*.vue'),
         ),
     setup({ el, App, props, plugin }) {
-        createApp({ render: () => h(App, props) })
+        const app = createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(Quasar, {
                 plugins: {
@@ -34,18 +33,16 @@ createInertiaApp({
                 },
                 iconSet: quasarIconSet,
                 config: {
-                    dark: false,
-                    // brand: {
-                    //     primary: '#e46262',
-                    // },
+                    dark: 'auto',
                     dialog: {},
                     notify: {
                         progress: true,
-                        position: 'top'
+                        position: 'top',
                     },
                     loading: {
                         spinner: CustomLoading,
-                    }
+                    },
+
                     // loading: {
                     //     // spinnerColor: 'primary',
                     //     // backgroundColor: 'purple',
@@ -59,9 +56,12 @@ createInertiaApp({
                     // },
                     // loadingBar: {},
                     // ..and many more (check Installation card on each Quasar component/directive/plugin)
-                }
-            })
-            .mount(el);
+                },
+            });
+
+        app.config.globalProperties.route = routeHelper;
+
+        app.mount(el);
     },
     progress: {
         showSpinner: true,
@@ -70,4 +70,4 @@ createInertiaApp({
 });
 
 // This will set light / dark mode on page load...
-initializeTheme();
+// initializeTheme();
