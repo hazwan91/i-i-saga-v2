@@ -17,7 +17,20 @@ const props = defineProps({
         type: Object,
         default: () => [],
     },
+    zoneOffsets: {
+        type: Array,
+        default: () => [],
+    },
 });
+
+const cumulativeIndex = (groups, currentGroupIndex, districtIndex) => {
+    let sum = 0;
+    const groupKeys = Object.keys(groups);
+    for (let i = 0; i < currentGroupIndex; i++) {
+        sum += groups[groupKeys[i]].length;
+    }
+    return sum + districtIndex;
+};
 
 const search = ref(route.query().carian || '');
 const currentPage = ref(props.districts.current_page);
@@ -137,28 +150,50 @@ const onDelete = (row) => {
                 </thead>
                 <tbody>
                     <template
-                        v-for="(groupDistrict, index) in groupDistricts"
+                        v-for="(
+                            [zone, listOfDistricts], index
+                        ) in Object.entries(groupDistricts)"
                         :key="`groupDistrict_${index}`"
                     >
                         <tr>
-                            <td colspan="2" class="">
-                                {{
-                                    groupDistrict[0]?.zone?.name ?? 'Tiada Zon'
-                                }}
+                            <td colspan="2" class="bg-grey-6 font-semibold">
+                                {{ zone === '' ? 'Tanpa Zon' : zone }} ({{
+                                    districts.data.filter(
+                                        (item) =>
+                                            item.zone_id ===
+                                            listOfDistricts[0].zone_id,
+                                    ).length
+                                }})
                             </td>
                         </tr>
                         <template
-                            v-for="(district, index2) in groupDistrict"
+                            v-for="(district, index2) in listOfDistricts"
                             :key="`district_${index2}`"
                         >
                             <tr>
                                 <td class="text-center">
+                                    <!-- {{
+                                        (districts.current_page - 1) *
+                                            districts.per_page +
+                                        cumulativeIndex(
+                                            groupDistricts,
+                                            index,
+                                            index2,
+                                        ) +
+                                        1
+                                    }} -->
                                     {{
                                         (districts.current_page - 1) *
                                             districts.per_page +
-                                        index +
+                                        Object.entries(groupDistricts)
+                                            .slice(0, index)
+                                            .reduce(
+                                                (sum, [, districts]) =>
+                                                    sum + districts.length,
+                                                0,
+                                            ) +
                                         index2 +
-                                        2
+                                        1
                                     }}
                                 </td>
                                 <td>{{ district.name }}</td>

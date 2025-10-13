@@ -16,18 +16,30 @@ class DistrictController extends Controller
      */
     public function index()
     {
+        // $districts = District::query()
+        //     ->when(request()->query('carian'), function ($query) {
+        //         $query->where('name', 'like', '%' . request()->query('carian') . '%');
+        //     })
+        //     ->with('zone:id,name')
+        //     ->select('id', 'zone_id', 'name')
+        //     ->orderBy('zone.name', 'asc')
+        //     ->paginate(request()->query('per_page'), ['*'], 'laman')
+        //     ->withQueryString();
+
         $districts = District::query()
             ->when(request()->query('carian'), function ($query) {
-                $query->where('name', 'like', '%' . request()->query('carian') . '%');
+                $query->where('districts.name', 'like', '%' . request()->query('carian') . '%');
             })
-            ->with('zone:id,name')
-            ->select('id', 'zone_id', 'name')
-            ->paginate(request()->query('per_page'), ['*'], 'laman')
+            ->leftJoin('zones', 'districts.zone_id', '=', 'zones.id')
+            ->select('districts.id', 'districts.zone_id', 'districts.name', 'zones.name as zone_name', 'zones.color as zone_color')
+            ->orderBy('zones.name', 'asc')
+            ->paginate(request()->query('per_page') ?? 10, ['*'], 'laman')
             ->withQueryString();
 
         $groupDistricts = $districts->getCollection()->groupBy(function ($district) {
-            return $district->zone->name ?? 'Tanpa Zon';
+            return $district->zone?->name;
         });
+
         return Inertia::render('Auth/District/Index', compact('districts', 'groupDistricts'));
     }
 
