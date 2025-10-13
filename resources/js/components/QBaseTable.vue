@@ -12,11 +12,12 @@
             :no-data-label="noDataLabel"
             :no-results-label="noResultsLabel"
             :bordered="bordered"
-            :class="tableClass"
+            :class="computedTableClass"
+            :table-header-class="computedTableHeaderClass"
             :separator="separator"
             @request="onRequest"
         >
-            <template #top>
+            <template #top-right>
                 <q-input
                     v-model="filter"
                     dense
@@ -34,8 +35,49 @@
                 </q-input>
             </template>
 
+            <!-- <template
+                v-for="(_, name) in $slots"
+                v-if="name.startsWith('body-cell-')"
+                v-slot:[name]="slotProps"
+            >
+                <slot :name="name" v-bind="slotProps" />
+            </template> -->
+            <template v-for="(_, name) in $slots" v-slot:[name]="slotProps">
+                <slot :name="name" v-bind="slotProps" />
+            </template>
+
             <template v-if="$slots.body" #body="props">
-                <slot name="body" v-bind="props" />
+                <slot
+                    name="body"
+                    v-bind="{
+                        ...props,
+                        rows,
+                        columns: props.cols || columns,
+                    }"
+                />
+            </template>
+
+            <template
+                v-if="
+                    columns.some((col) => col.name === 'actions') &&
+                    !$slots['body-cell-actions']
+                "
+                #body-cell-actions="props"
+            >
+                <q-td :props="props" class="text-center">
+                    <q-btn
+                        flat
+                        color="primary"
+                        icon="mdi-pencil"
+                        @click="$emit('edit', props.row)"
+                    />
+                    <q-btn
+                        flat
+                        color="negative"
+                        icon="mdi-delete"
+                        @click="$emit('delete', props.row)"
+                    />
+                </q-td>
             </template>
 
             <template #no-data>
@@ -50,7 +92,12 @@
 
 <script setup>
 import { router } from '@inertiajs/vue3';
-import { ref, watch } from 'vue';
+import { useQuasar } from 'quasar';
+import { computed, ref, watch } from 'vue';
+
+const $q = useQuasar();
+
+const emit = defineEmits(['edit', 'delete']);
 
 const props = defineProps({
     title: { type: String, default: 'Senarai' },
@@ -66,7 +113,11 @@ const props = defineProps({
     bordered: { type: Boolean, default: false },
     tableClass: {
         type: [String, Array, Object],
-        default: 'rounded-xl shadow-md',
+        default: '',
+    },
+    tableHeaderClass: {
+        type: [String, Array, Object],
+        default: '',
     },
     separator: { type: String, default: 'horizontal' },
 });
@@ -75,6 +126,15 @@ const rows = ref([]);
 const loading = ref(false);
 const filter = ref('');
 const pagination = ref({ ...props.initialPagination, rowsNumber: 0 });
+
+const computedTableClass = computed(() => {
+    const baseClass = `rounded-xl shadow-md`;
+    return [baseClass, props.tableClass];
+});
+const computedTableHeaderClass = computed(() => {
+    const baseClass = `uppercase ${$q.dark.isActive ? 'bg-grey-8' : 'bg-grey-4'}`;
+    return [baseClass, props.tableHeaderClass];
+});
 
 watch(
     () => props.rows,

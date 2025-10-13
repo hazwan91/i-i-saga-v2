@@ -8,14 +8,26 @@ import _Form from './_Form.vue';
 const $q = useQuasar();
 
 const props = defineProps({
-    races: {
+    appointStatuses: {
         type: Object,
         default: () => [],
     },
 });
 
 const columns = [
-    { name: 'name', label: 'Nama Bangsa', field: 'name', align: 'left' },
+    {
+        name: 'code',
+        label: 'Kod Taraf Lantikan',
+        field: 'code',
+        align: 'center',
+        style: 'width: 150px',
+    },
+    {
+        name: 'name',
+        label: 'Nama Taraf Lantikan',
+        field: 'name',
+        align: 'left',
+    },
     { name: 'actions', label: '', align: 'right' },
 ];
 
@@ -44,25 +56,25 @@ const onDelete = (row) => {
         message: 'Adakah anda pasti untuk memadam data ini?',
         cancel: true,
     }).onOk(() => {
-        router.delete(`/admin/bangsa/${row.id}`);
+        router.delete(`/admin/taraf-lantikan/${row.id}`);
     });
 };
 </script>
 
 <template>
     <AuthLayout>
-        <template #title> Bangsa </template>
+        <template #title> Taraf Lantikan </template>
 
         <template #headerActions>
             <q-btn label="Tambah" color="primary" @click="onCreate" />
         </template>
 
         <template #breadcrumbs>
-            <q-breadcrumbs-el label="Bangsa"></q-breadcrumbs-el>
+            <q-breadcrumbs-el label="Taraf Lantikan"></q-breadcrumbs-el>
         </template>
 
         <QBaseTable
-            :rows="races"
+            :rows="appointStatuses"
             :columns="columns"
             @edit="onEdit"
             @delete="onDelete"

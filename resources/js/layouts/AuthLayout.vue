@@ -77,8 +77,8 @@ const toggleLeftDrawer = () => {
     <!-- <q-layout view="hHh lpR fFf" class="bg-grey-1"> -->
     <q-layout view="hHh Lpr fFf" class="">
         <q-header
-            :class="`text-grey-8 q-py-xs ${$q.dark.isActive ? 'bg-amber-500' : 'bg-white'} h-[78px] pt-4 shadow-md`"
-            height-hint="78"
+            :class="`text-grey-8 q-py-xs ${$q.dark.isActive ? 'bg-amber-500' : 'bg-white'} h-[73px] pt-3 shadow-md`"
+            height-hint="73"
         >
             <q-toolbar>
                 <q-btn

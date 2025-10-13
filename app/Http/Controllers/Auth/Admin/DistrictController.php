@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Auth\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\District;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
+use Inertia\Inertia;
 
 class DistrictController extends Controller
 {
@@ -13,7 +16,19 @@ class DistrictController extends Controller
      */
     public function index()
     {
-        //
+        $districts = District::query()
+            ->when(request()->query('carian'), function ($query) {
+                $query->where('name', 'like', '%' . request()->query('carian') . '%');
+            })
+            ->with('zone:id,name')
+            ->select('id', 'zone_id', 'name')
+            ->paginate(request()->query('per_page'), ['*'], 'laman')
+            ->withQueryString();
+
+        $groupDistricts = $districts->getCollection()->groupBy(function ($district) {
+            return $district->zone->name ?? 'Tanpa Zon';
+        });
+        return Inertia::render('Auth/District/Index', compact('districts', 'groupDistricts'));
     }
 
     /**
@@ -53,7 +68,22 @@ class DistrictController extends Controller
      */
     public function update(Request $request, District $district)
     {
-        //
+        $vdata = $request->validate([
+            'color' => ['bail', 'required', 'string', 'max:255'],
+            'name' => ['bail', 'required', 'string', 'max:255', Rule::unique('zones')->ignore($district->id)],
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $district->color = $vdata['color'];
+            $district->name = $vdata['name'];
+            $district->save();
+            DB::commit();
+            return back()->with('pass', 'Data berjaya disimpan.');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return back()->with('fail', 'Terdapat masalah semasa menyimpan data. Sila cuba lagi.');
+        }
     }
 
     /**
@@ -61,6 +91,15 @@ class DistrictController extends Controller
      */
     public function destroy(District $district)
     {
-        //
+        DB::beginTransaction();
+        try {
+            $district->delete();
+            DB::commit();
+
+            return back()->with('pass', 'Data berjaya dipadam.');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return back()->with('fail', 'Terdapat masalah semasa memadam data. Sila cuba lagi.');
+        }
     }
 }

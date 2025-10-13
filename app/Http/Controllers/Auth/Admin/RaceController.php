@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Auth\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Race;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class RaceController extends Controller
@@ -19,7 +21,8 @@ class RaceController extends Controller
                 $query->where('name', 'like', '%' . request()->query('carian') . '%');
             })
             ->select('id', 'name')
-            ->paginate(request()->query('per_page'), ['*'], 'page')->withQueryString();
+            ->paginate(request()->query('per_page'), ['*'], 'page')
+            ->withQueryString();
         return Inertia::render('Auth/Race/Index', compact('races'));
     }
 
@@ -36,7 +39,21 @@ class RaceController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $vdata = $request->validate([
+            'name' => ['bail', 'required', 'string', 'max:255', Rule::unique('races')]
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $race = new Race;
+            $race->name = $vdata['name'];
+            $race->save();
+            DB::commit();
+            return back()->with('pass', 'Data berjaya disimpan.');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return back()->with('fail', 'Terdapat masalah semasa menyimpan data. Sila cuba lagi.');
+        }
     }
 
     /**
@@ -60,7 +77,20 @@ class RaceController extends Controller
      */
     public function update(Request $request, Race $race)
     {
-        //
+        $vdata = $request->validate([
+            'name' => ['bail', 'required', 'string', 'max:255', Rule::unique('races')->ignore($race->id)]
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $race->name = $vdata['name'];
+            $race->save();
+            DB::commit();
+            return back()->with('pass', 'Data berjaya disimpan.');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return back()->with('fail', 'Terdapat masalah semasa menyimpan data. Sila cuba lagi.');
+        }
     }
 
     /**
@@ -68,6 +98,15 @@ class RaceController extends Controller
      */
     public function destroy(Race $race)
     {
-        //
+        DB::beginTransaction();
+        try {
+            $race->delete();
+            DB::commit();
+
+            return back()->with('pass', 'Data berjaya dipadam.');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return back()->with('fail', 'Terdapat masalah semasa memadam data. Sila cuba lagi.');
+        }
     }
 }
