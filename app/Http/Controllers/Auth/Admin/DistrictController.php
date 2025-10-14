@@ -21,6 +21,13 @@ class DistrictController extends Controller
             ->when(request()->query('carian'), function ($query) {
                 $query->where('districts.name', 'like', '%' . request()->query('carian') . '%');
             })
+            ->when(request()->query('zon'), function ($query) {
+                if (request()->query('zon') === 'tiada') {
+                    $query->whereNull('zone_id');
+                } else {
+                    $query->where('zone_id', '=', request()->query('zon'));
+                }
+            })
             ->leftJoin('zones', 'districts.zone_id', '=', 'zones.id')
             ->select('districts.id', 'districts.zone_id', 'districts.name', 'zones.name as zone_name', 'zones.color as zone_color')
             ->orderBy('zones.name', 'asc')
@@ -31,9 +38,19 @@ class DistrictController extends Controller
             return $district->zone?->name;
         });
 
-        $totalZoneByDistricts = Zone::select('id')->withCount('districts')->get();
+        $zones = Zone::select('id', 'name')->withCount('districts')->get();
+        $unassignedDistrictCount = District::whereNull('zone_id')->count();
 
-        return Inertia::render('Auth/District/Index', compact('districts', 'groupDistricts', 'totalZoneByDistricts'));
+        // Append a fake "zone" record for them
+        if ($unassignedDistrictCount > 0) {
+            $zones->prepend((object) [
+                'id' => 'tiada',
+                'name' => 'Tiada Zon',
+                'districts_count' => $unassignedDistrictCount,
+            ]);
+        }
+
+        return Inertia::render('Auth/District/Index', compact('districts', 'groupDistricts', 'zones'));
     }
 
     /**
@@ -49,7 +66,23 @@ class DistrictController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $vdata = $request->validate([
+            'zone_id' => ['bail', 'nullable', 'integer', Rule::exists('zones', 'id')],
+            'name' => ['bail', 'required', 'string', 'max:255', Rule::unique('zones')],
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $district = new District;
+            $district->zone_id = $vdata['zone_id'];
+            $district->name = $vdata['name'];
+            $district->save();
+            DB::commit();
+            return back()->with('pass', 'Data berjaya disimpan.');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return back()->with('fail', 'Terdapat masalah semasa menyimpan data. Sila cuba lagi.');
+        }
     }
 
     /**
@@ -74,13 +107,13 @@ class DistrictController extends Controller
     public function update(Request $request, District $district)
     {
         $vdata = $request->validate([
-            'color' => ['bail', 'required', 'string', 'max:255'],
+            'zone_id' => ['bail', 'nullable', 'integer', Rule::exists('zones', 'id')],
             'name' => ['bail', 'required', 'string', 'max:255', Rule::unique('zones')->ignore($district->id)],
         ]);
 
         DB::beginTransaction();
         try {
-            $district->color = $vdata['color'];
+            $district->zone_id = $vdata['zone_id'];
             $district->name = $vdata['name'];
             $district->save();
             DB::commit();
@@ -106,11 +139,5 @@ class DistrictController extends Controller
             DB::rollBack();
             return back()->with('fail', 'Terdapat masalah semasa memadam data. Sila cuba lagi.');
         }
-    }
-
-    public function listZones()
-    {
-        $zones = Zone::select('id', 'name')->get();
-        return Inertia::render('Auth/District/Index', ['zones' => $zones]);
     }
 }

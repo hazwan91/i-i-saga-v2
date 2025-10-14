@@ -3,7 +3,7 @@ import AuthLayout from '@/layouts/AuthLayout.vue';
 import { routeHelper as route } from '@/utils/route';
 import { router } from '@inertiajs/vue3';
 import { useQuasar } from 'quasar';
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import _Form from './_Form.vue';
 
 const $q = useQuasar();
@@ -21,34 +21,26 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
-    totalZoneByDistricts: {
+    zones: {
         type: Array,
         default: () => [],
     },
 });
 
-const cumulativeIndex = (groups, currentGroupIndex, districtIndex) => {
-    let sum = 0;
-    const groupKeys = Object.keys(groups);
-    for (let i = 0; i < currentGroupIndex; i++) {
-        sum += groups[groupKeys[i]].length;
-    }
-    return sum + districtIndex;
-};
+const listZones = props.zones.map((zone) => {
+    return {
+        label: zone.name,
+        value: zone.id,
+    };
+});
 
 const search = ref(route.query().carian || '');
 const perPage = ref(route.query().per_page || 10);
 const currentPage = ref(props.districts.current_page);
-
-watch(currentPage, (page) => {
-    router.get(
-        route.url(),
-        { ...route.query(), laman: page },
-        {
-            preserveState: true,
-            preserveScroll: true,
-        },
-    );
+const filters = ref({
+    zone_id: props.zones.find((zone) => {
+        return zone.id === route.query().zon;
+    })?.id,
 });
 
 const create = () => {
@@ -71,13 +63,16 @@ const edit = (row) => {
     });
 };
 
-const destory = (row) => {
+const destroy = (row) => {
     $q.dialog({
         title: 'Peringatan',
         message: 'Adakah anda pasti untuk memadam data ini?',
         cancel: true,
     }).onOk(() => {
-        router.delete(`/admin/zon/${row}`);
+        router.delete(`/admin/daerah/${row.id}`, {
+            preserveState: true,
+            preserveScroll: true,
+        });
     });
 };
 </script>
@@ -119,7 +114,34 @@ const destory = (row) => {
                     </q-input>
                 </div>
             </q-card-section>
-            <!-- <q-card-section> -->
+
+            <q-card-section>
+                <q-card flat bordered>
+                    <q-card-section>
+                        <div>Tapisan</div>
+                    </q-card-section>
+                    <q-card-section>
+                        <q-select
+                            v-model="filters.zone_id"
+                            outlined
+                            label="Pilih Zon"
+                            :options="listZones"
+                            clearable
+                            emit-value
+                            map-options
+                            hide-bottom-space
+                            @update:model-value="
+                                router.get(
+                                    route.url(),
+                                    { zon: filters.zone_id, laman: 1 },
+                                    { preserveState: true, replace: true },
+                                )
+                            "
+                        >
+                        </q-select>
+                    </q-card-section>
+                </q-card>
+            </q-card-section>
 
             <q-card-section>
                 <div class="flex items-center justify-between gap-4">
@@ -161,6 +183,13 @@ const destory = (row) => {
                         boundary-links
                         direction-links
                         size="md"
+                        @update:model-value="
+                            router.get(
+                                route.url(),
+                                { laman: currentPage },
+                                { preserveState: true, replace: true },
+                            )
+                        "
                     />
                 </div>
             </q-card-section>
@@ -180,14 +209,26 @@ const destory = (row) => {
                         :key="`groupDistrict_${index}`"
                     >
                         <tr>
-                            <td colspan="3" class="bg-grey-6 font-semibold">
-                                {{ zone === '' ? 'Tanpa Zon' : zone }} ({{
-                                    totalZoneByDistricts.find(
-                                        (item) =>
-                                            item.id ===
-                                            listOfDistricts[0].zone_id,
-                                    )?.districts_count || 0
-                                }})
+                            <td
+                                colspan="3"
+                                :class="`${$q.dark.isActive ? 'bg-grey-8' : 'bg-grey-4'} font-semibold`"
+                            >
+                                <div v-if="zone === ''">
+                                    Tiada Zon ({{
+                                        zones.find(
+                                            (item) => item.id === 'tiada',
+                                        ).districts_count || 0
+                                    }})
+                                </div>
+                                <div v-else>
+                                    {{ zone }} ({{
+                                        zones.find(
+                                            (item) =>
+                                                item.id ===
+                                                listOfDistricts[0].zone_id,
+                                        )?.districts_count || 0
+                                    }})
+                                </div>
                             </td>
                         </tr>
                         <template
@@ -270,6 +311,13 @@ const destory = (row) => {
                         boundary-links
                         direction-links
                         size="md"
+                        @update:model-value="
+                            router.get(
+                                route.url(),
+                                { laman: currentPage },
+                                { preserveState: true, replace: true },
+                            )
+                        "
                     />
                 </div>
             </q-card-section>

@@ -104,6 +104,8 @@ Route::middleware(['auth', 'verified'])->name('auth.')->group(function () {
                 'stesen' => 'station'
             ]);
 
+        Route::get('zon/senarai', [\App\Http\Controllers\Auth\Admin\ZoneController::class, 'listZones'])
+            ->name('zone.listZones');
         Route::resource('zon', \App\Http\Controllers\Auth\Admin\ZoneController::class)
             ->names([
                 'index' => 'zone.index',
@@ -118,8 +120,6 @@ Route::middleware(['auth', 'verified'])->name('auth.')->group(function () {
                 'zon' => 'zone'
             ]);
 
-        Route::get('daerah/senarai/zon', [\App\Http\Controllers\Auth\Admin\DistrictController::class, 'listZones'])
-            ->name('district.listZones');
         Route::resource('daerah', \App\Http\Controllers\Auth\Admin\DistrictController::class)
             ->names([
                 'index' => 'district.index',

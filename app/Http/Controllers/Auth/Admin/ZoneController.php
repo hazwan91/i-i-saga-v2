@@ -113,4 +113,14 @@ class ZoneController extends Controller
             return back()->with('fail', 'Terdapat masalah semasa memadam data. Sila cuba lagi.');
         }
     }
+
+    public function listZones()
+    {
+        $zones = Zone::select('id', 'name')->get();
+        return back()->with([
+            'data' => [
+                'zones' => $zones
+            ]
+        ]);
+    }
 }

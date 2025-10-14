@@ -19,6 +19,9 @@
                     :options="listZones"
                     :error="form.errors.zone_id ? true : false"
                     :error-message="form.errors.zone_id"
+                    clearable
+                    emit-value
+                    map-options
                     hide-bottom-space
                 >
                 </q-select>
@@ -67,7 +70,7 @@ defineEmits([
 const listZones = ref([]);
 
 const form = useForm({
-    color: '',
+    zone_id: '',
     name: '',
 });
 
@@ -76,13 +79,13 @@ const { dialogRef, onDialogHide, onDialogOK, onDialogCancel } =
 
 const onDialogShow = () => {
     router.get(
-        '/admin/daerah/senarai/zon',
+        '/admin/zon/senarai',
         {},
         {
             preserveState: true,
             preserveScroll: true,
             onSuccess: (res) => {
-                listZones.value = res.props.zones.map((zone) => {
+                listZones.value = res.props.data.zones.map((zone) => {
                     return {
                         label: zone.name,
                         value: zone.id,
@@ -93,7 +96,7 @@ const onDialogShow = () => {
     );
 
     if (props.operation === 'edit' && props.row) {
-        form.color = props.row.color;
+        form.zone_id = props.row.zone_id;
         form.name = props.row.name;
     } else {
         form.reset();
@@ -102,7 +105,7 @@ const onDialogShow = () => {
 
 // this is part of our example (so not required)
 const store = () => {
-    form.post('/admin/zon', {
+    form.post('/admin/daerah', {
         onSuccess: (res) => {
             onDialogOK();
         },
@@ -110,7 +113,7 @@ const store = () => {
 };
 
 const update = () => {
-    form.put(`/admin/zon/${props.row.id}`, {
+    form.put(`/admin/daerah/${props.row.id}`, {
         onSuccess: (res) => {
             onDialogOK();
         },
