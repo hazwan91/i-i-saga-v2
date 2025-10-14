@@ -1,5 +1,4 @@
 <script setup>
-import { logout } from '@/routes/auth';
 import { router, usePage } from '@inertiajs/vue3';
 import { useQuasar } from 'quasar';
 import { ref, watch } from 'vue';
@@ -78,34 +77,16 @@ const toggleLeftDrawer = () => {
     <q-layout view="hHh Lpr fFf" class="">
         <q-header
             :class="`text-grey-8 q-py-xs ${$q.dark.isActive ? 'bg-amber-500' : 'bg-white'} h-[73px] pt-3 shadow-md`"
-            height-hint="73"
-        >
+            height-hint="73">
             <q-toolbar>
-                <q-btn
-                    flat
-                    dense
-                    round
-                    @click="toggleLeftDrawer"
-                    aria-label="Menu"
-                    icon="mdi-menu"
-                />
+                <q-btn flat dense round @click="toggleLeftDrawer" aria-label="Menu" icon="mdi-menu" />
 
-                <q-btn
-                    flat
-                    no-caps
-                    no-wrap
-                    class="q-ml-xs"
-                    v-if="$q.screen.gt.xs"
-                    :href="''"
-                    @click.prevent="router.get('')"
-                >
+                <q-btn flat no-caps no-wrap class="q-ml-xs" v-if="$q.screen.gt.xs" :href="''"
+                    @click.prevent="router.get('')">
                     <q-img src="/images/logo_msn.png" width="28px"></q-img>
                     <q-toolbar-title shrink class="text-weight-bold text-xl">
                         I-SAGA
-                        <span
-                            :class="`text-[14px] ${$q.dark.isActive ? '' : 'text-amber-500'}`"
-                            >v2</span
-                        >
+                        <span :class="`text-[14px] ${$q.dark.isActive ? '' : 'text-amber-500'}`">v2</span>
                     </q-toolbar-title>
                     <q-img src="/images/saga_logo.png" width="28px"></q-img>
                 </q-btn>
@@ -118,14 +99,7 @@ const toggleLeftDrawer = () => {
                 </div> -->
 
                 <div class="q-gutter-sm row no-wrap items-center">
-                    <q-btn
-                        round
-                        dense
-                        flat
-                        color="grey-8"
-                        icon="mdi-message-bulleted"
-                        v-if="$q.screen.gt.sm"
-                    >
+                    <q-btn round dense flat color="grey-8" icon="mdi-message-bulleted" v-if="$q.screen.gt.sm">
                         <q-tooltip>Messages</q-tooltip>
                     </q-btn>
                     <q-btn round dense flat color="grey-8" icon="mdi-bell">
@@ -134,30 +108,15 @@ const toggleLeftDrawer = () => {
                         </q-badge>
                         <q-tooltip>Notifications</q-tooltip>
                     </q-btn>
-                    <q-btn
-                        round
-                        dense
-                        flat
-                        color="grey-8"
-                        icon="mdi-theme-light-dark"
-                        @click.prevent="$q.dark.toggle()"
-                    >
+                    <q-btn round dense flat color="grey-8" icon="mdi-theme-light-dark"
+                        @click.prevent="$q.dark.toggle()">
                         <q-tooltip>Mod Gelap</q-tooltip>
                     </q-btn>
                     <q-btn-dropdown flat icon="mdi-account">
                         <q-list>
-                            <q-item
-                                clickable
-                                v-close-popup
-                                @click.prevent="router.post(logout())"
-                            >
+                            <q-item clickable v-close-popup @click.prevent="router.post('/auth/logout')">
                                 <q-item-section avatar>
-                                    <q-avatar
-                                        icon="mdi-logout"
-                                        color="primary"
-                                        text-color="white"
-                                        size="md"
-                                    />
+                                    <q-avatar icon="mdi-logout" color="primary" text-color="white" size="md" />
                                 </q-item-section>
                                 <q-item-section>
                                     <q-item-label>Log Keluar</q-item-label>
@@ -182,21 +141,11 @@ const toggleLeftDrawer = () => {
 </q-toolbar> -->
         </q-header>
 
-        <q-drawer
-            v-model="leftDrawerOpen"
-            show-if-above
-            class="shadow-md"
-            :width="320"
-        >
+        <q-drawer v-model="leftDrawerOpen" show-if-above class="shadow-md" :width="320">
             <q-scroll-area class="fit">
                 <q-list padding>
-                    <q-item
-                        v-ripple
-                        clickable
-                        :active="route.is('/')"
-                        href="/"
-                        @click.prevent="route.visit({ path: '/' })"
-                    >
+                    <q-item v-ripple clickable :active="route.is('/')" href="/"
+                        @click.prevent="route.visit({ path: '/' })">
                         <q-item-section avatar>
                             <q-icon color="grey" name="mdi-home" />
                         </q-item-section>
@@ -206,7 +155,7 @@ const toggleLeftDrawer = () => {
                     </q-item>
 
                     <!-- <q-separator class="q-mt-md q-mb-xs" /> -->
-                    <!-- 
+                    <!--
                     <q-item-label
                         header
                         class="text-weight-bold text-uppercase"
@@ -216,21 +165,11 @@ const toggleLeftDrawer = () => {
 
                     <!-- <q-separator class="q-mt-md q-mb-xs" /> -->
 
-                    <q-expansion-item
-                        icon="mdi-text-box-edit"
-                        label="Admin"
-                        :default-opened="route.is('/admin/*')"
-                    >
-                        <q-item
-                            :inset-level="1"
-                            v-ripple
-                            clickable
-                            :active="route.is('/admin/pengguna*')"
-                            href="/admin/pengguna"
-                            @click.prevent="
+                    <q-expansion-item icon="mdi-text-box-edit" label="Admin" :default-opened="route.is('/admin/*')">
+                        <q-item :inset-level="1" v-ripple clickable :active="route.is('/admin/pengguna*')"
+                            href="/admin/pengguna" @click.prevent="
                                 route.visit({ path: '/admin/pengguna' })
-                            "
-                        >
+                                ">
                             <q-item-section avatar>
                                 <q-icon color="grey" name="mdi-account-group" />
                             </q-item-section>
@@ -239,16 +178,10 @@ const toggleLeftDrawer = () => {
                             </q-item-section>
                         </q-item>
 
-                        <q-item
-                            :inset-level="1"
-                            v-ripple
-                            clickable
-                            :active="route.is('/admin/taraf-lantikan*')"
-                            href="/admin/taraf-lantikan"
-                            @click.prevent="
+                        <q-item :inset-level="1" v-ripple clickable :active="route.is('/admin/taraf-lantikan*')"
+                            href="/admin/taraf-lantikan" @click.prevent="
                                 route.visit({ path: '/admin/taraf-lantikan' })
-                            "
-                        >
+                                ">
                             <q-item-section avatar>
                                 <q-icon color="grey" name="mdi-account-group" />
                             </q-item-section>
@@ -257,16 +190,10 @@ const toggleLeftDrawer = () => {
                             </q-item-section>
                         </q-item>
 
-                        <q-item
-                            :inset-level="1"
-                            v-ripple
-                            clickable
-                            :active="route.is('/admin/bangsa*')"
-                            href="/admin/bangsa"
-                            @click.prevent="
+                        <q-item :inset-level="1" v-ripple clickable :active="route.is('/admin/bangsa*')"
+                            href="/admin/bangsa" @click.prevent="
                                 route.visit({ path: '/admin/bangsa' })
-                            "
-                        >
+                                ">
                             <q-item-section avatar>
                                 <q-icon color="grey" name="mdi-account-group" />
                             </q-item-section>
@@ -275,16 +202,10 @@ const toggleLeftDrawer = () => {
                             </q-item-section>
                         </q-item>
 
-                        <q-item
-                            :inset-level="1"
-                            v-ripple
-                            clickable
-                            :active="route.is('/admin/jenis-agensi*')"
-                            href="/admin/jenis-agensi"
-                            @click.prevent="
+                        <q-item :inset-level="1" v-ripple clickable :active="route.is('/admin/jenis-agensi*')"
+                            href="/admin/jenis-agensi" @click.prevent="
                                 route.visit({ path: '/admin/jenis-agensi' })
-                            "
-                        >
+                                ">
                             <q-item-section avatar>
                                 <q-icon color="grey" name="mdi-account-group" />
                             </q-item-section>
@@ -293,16 +214,10 @@ const toggleLeftDrawer = () => {
                             </q-item-section>
                         </q-item>
 
-                        <q-item
-                            :inset-level="1"
-                            v-ripple
-                            clickable
-                            :active="route.is('/admin/agensi*')"
-                            href="/admin/agensi"
-                            @click.prevent="
+                        <q-item :inset-level="1" v-ripple clickable :active="route.is('/admin/agensi*')"
+                            href="/admin/agensi" @click.prevent="
                                 route.visit({ path: '/admin/agensi' })
-                            "
-                        >
+                                ">
                             <q-item-section avatar>
                                 <q-icon color="grey" name="mdi-account-group" />
                             </q-item-section>
@@ -311,16 +226,10 @@ const toggleLeftDrawer = () => {
                             </q-item-section>
                         </q-item>
 
-                        <q-item
-                            :inset-level="1"
-                            v-ripple
-                            clickable
-                            :active="route.is('/admin/stesen*')"
-                            href="/admin/stesen"
-                            @click.prevent="
+                        <q-item :inset-level="1" v-ripple clickable :active="route.is('/admin/stesen*')"
+                            href="/admin/stesen" @click.prevent="
                                 route.visit({ path: '/admin/stesen' })
-                            "
-                        >
+                                ">
                             <q-item-section avatar>
                                 <q-icon color="grey" name="mdi-account-group" />
                             </q-item-section>
@@ -329,14 +238,8 @@ const toggleLeftDrawer = () => {
                             </q-item-section>
                         </q-item>
 
-                        <q-item
-                            :inset-level="1"
-                            v-ripple
-                            clickable
-                            :active="route.is('/admin/zon*')"
-                            href="/admin/zon"
-                            @click.prevent="route.visit({ path: '/admin/zon' })"
-                        >
+                        <q-item :inset-level="1" v-ripple clickable :active="route.is('/admin/zon*')" href="/admin/zon"
+                            @click.prevent="route.visit({ path: '/admin/zon' })">
                             <q-item-section avatar>
                                 <q-icon color="grey" name="mdi-account-group" />
                             </q-item-section>
@@ -345,16 +248,10 @@ const toggleLeftDrawer = () => {
                             </q-item-section>
                         </q-item>
 
-                        <q-item
-                            :inset-level="1"
-                            v-ripple
-                            clickable
-                            :active="route.is('/admin/daerah*')"
-                            href="/admin/daerah"
-                            @click.prevent="
+                        <q-item :inset-level="1" v-ripple clickable :active="route.is('/admin/daerah*')"
+                            href="/admin/daerah" @click.prevent="
                                 route.visit({ path: '/admin/daerah' })
-                            "
-                        >
+                                ">
                             <q-item-section avatar>
                                 <q-icon color="grey" name="mdi-account-group" />
                             </q-item-section>
@@ -367,12 +264,8 @@ const toggleLeftDrawer = () => {
                     <q-separator class="q-mt-md q-mb-lg" />
 
                     <div class="q-px-md text-grey-6">
-                        <div
-                            class="row q-gutter-x-sm q-gutter-y-xs items-center"
-                        >
-                            <a class="YL__drawer-footer-link" href=""
-                                >Kredits</a
-                            >
+                        <div class="row q-gutter-x-sm q-gutter-y-xs items-center">
+                            <a class="YL__drawer-footer-link" href="">Kredits</a>
                             <a class="YL__drawer-footer-link" href="">Versi</a>
                             <!-- <a class="YL__drawer-footer-link" href=""></a> -->
                         </div>
@@ -382,30 +275,17 @@ const toggleLeftDrawer = () => {
         </q-drawer>
 
         <q-page-container>
-            <div
-                class="scrollable-container space-y-10 px-3 pt-6 pb-20 sm:px-10"
-            >
+            <div class="scrollable-container space-y-10 px-3 pt-6 pb-20 sm:px-10">
                 <div class="space-y-4">
-                    <q-breadcrumbs
-                        class="text-grey"
-                        active-color="primary"
-                        v-if="$slots.breadcrumbs"
-                    >
+                    <q-breadcrumbs class="text-grey" active-color="primary" v-if="$slots.breadcrumbs">
                         <template v-slot:separator>
-                            <q-icon
-                                size="1.2em"
-                                name="mdi-arrow-right"
-                                color="primary"
-                            />
+                            <q-icon size="1.2em" name="mdi-arrow-right" color="primary" />
                         </template>
 
                         <slot name="breadcrumbs" />
                     </q-breadcrumbs>
 
-                    <div
-                        class="row items-center justify-between"
-                        v-if="$slots.title || $slots.headerActions"
-                    >
+                    <div class="row items-center justify-between" v-if="$slots.title || $slots.headerActions">
                         <div>
                             <h5 class="font-semibold uppercase">
                                 <slot name="title" />
@@ -423,10 +303,8 @@ const toggleLeftDrawer = () => {
                 <slot />
 
                 <div class="flex justify-center">
-                    <span class="text-sm text-gray-500 italic"
-                        >&copy; 2025 HakCipta Terpelihara; Jabatan Perkhidmatan
-                        Awam Negeri Sabah</span
-                    >
+                    <span class="text-sm text-gray-500 italic">&copy; 2025 HakCipta Terpelihara; Jabatan Perkhidmatan
+                        Awam Negeri Sabah</span>
                 </div>
             </div>
         </q-page-container>
