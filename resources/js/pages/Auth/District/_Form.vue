@@ -12,28 +12,16 @@
                 @submit.prevent="operation === 'create' ? store() : update()"
                 class="q-gutter-md q-mt-md q-mb-md"
             >
-                <q-input
-                    v-model="form.color"
+                <q-select
+                    v-model="form.zone_id"
                     filled
-                    label="Warna Zon"
-                    placeholder="Masukkan warna Zon"
-                    :error="form.errors.color ? true : false"
-                    :error-message="form.errors.color"
+                    label="Pilih Zon"
+                    :options="listZones"
+                    :error="form.errors.zone_id ? true : false"
+                    :error-message="form.errors.zone_id"
                     hide-bottom-space
-                    autofocus
                 >
-                    <template v-slot:append>
-                        <q-icon name="mdi-palette" class="cursor-pointer">
-                            <q-popup-proxy
-                                cover
-                                transition-show="scale"
-                                transition-hide="scale"
-                            >
-                                <q-color v-model="form.color" />
-                            </q-popup-proxy>
-                        </q-icon>
-                    </template>
-                </q-input>
+                </q-select>
                 <q-input
                     v-model="form.name"
                     filled
@@ -54,8 +42,9 @@
 </template>
 
 <script setup>
-import { useForm } from '@inertiajs/vue3';
+import { router, useForm } from '@inertiajs/vue3';
 import { useDialogPluginComponent } from 'quasar';
+import { ref } from 'vue';
 
 const props = defineProps({
     // ...your custom props
@@ -75,6 +64,8 @@ defineEmits([
     ...useDialogPluginComponent.emits,
 ]);
 
+const listZones = ref([]);
+
 const form = useForm({
     color: '',
     name: '',
@@ -84,6 +75,23 @@ const { dialogRef, onDialogHide, onDialogOK, onDialogCancel } =
     useDialogPluginComponent();
 
 const onDialogShow = () => {
+    router.get(
+        '/admin/daerah/senarai/zon',
+        {},
+        {
+            preserveState: true,
+            preserveScroll: true,
+            onSuccess: (res) => {
+                listZones.value = res.props.zones.map((zone) => {
+                    return {
+                        label: zone.name,
+                        value: zone.id,
+                    };
+                });
+            },
+        },
+    );
+
     if (props.operation === 'edit' && props.row) {
         form.color = props.row.color;
         form.name = props.row.name;

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\District;
+use App\Models\Zone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -16,16 +17,6 @@ class DistrictController extends Controller
      */
     public function index()
     {
-        // $districts = District::query()
-        //     ->when(request()->query('carian'), function ($query) {
-        //         $query->where('name', 'like', '%' . request()->query('carian') . '%');
-        //     })
-        //     ->with('zone:id,name')
-        //     ->select('id', 'zone_id', 'name')
-        //     ->orderBy('zone.name', 'asc')
-        //     ->paginate(request()->query('per_page'), ['*'], 'laman')
-        //     ->withQueryString();
-
         $districts = District::query()
             ->when(request()->query('carian'), function ($query) {
                 $query->where('districts.name', 'like', '%' . request()->query('carian') . '%');
@@ -40,7 +31,9 @@ class DistrictController extends Controller
             return $district->zone?->name;
         });
 
-        return Inertia::render('Auth/District/Index', compact('districts', 'groupDistricts'));
+        $totalZoneByDistricts = Zone::select('id')->withCount('districts')->get();
+
+        return Inertia::render('Auth/District/Index', compact('districts', 'groupDistricts', 'totalZoneByDistricts'));
     }
 
     /**
@@ -113,5 +106,11 @@ class DistrictController extends Controller
             DB::rollBack();
             return back()->with('fail', 'Terdapat masalah semasa memadam data. Sila cuba lagi.');
         }
+    }
+
+    public function listZones()
+    {
+        $zones = Zone::select('id', 'name')->get();
+        return Inertia::render('Auth/District/Index', ['zones' => $zones]);
     }
 }

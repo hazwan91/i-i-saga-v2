@@ -21,6 +21,10 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
+    totalZoneByDistricts: {
+        type: Array,
+        default: () => [],
+    },
 });
 
 const cumulativeIndex = (groups, currentGroupIndex, districtIndex) => {
@@ -33,6 +37,7 @@ const cumulativeIndex = (groups, currentGroupIndex, districtIndex) => {
 };
 
 const search = ref(route.query().carian || '');
+const perPage = ref(route.query().per_page || 10);
 const currentPage = ref(props.districts.current_page);
 
 watch(currentPage, (page) => {
@@ -46,7 +51,7 @@ watch(currentPage, (page) => {
     );
 });
 
-const onCreate = () => {
+const create = () => {
     $q.dialog({
         component: _Form,
         componentProps: {
@@ -55,7 +60,8 @@ const onCreate = () => {
     });
 };
 
-const onEdit = (row) => {
+const edit = (row) => {
+    console.log(row);
     $q.dialog({
         component: _Form,
         componentProps: {
@@ -65,13 +71,13 @@ const onEdit = (row) => {
     });
 };
 
-const onDelete = (row) => {
+const destory = (row) => {
     $q.dialog({
         title: 'Peringatan',
         message: 'Adakah anda pasti untuk memadam data ini?',
         cancel: true,
     }).onOk(() => {
-        router.delete(`/admin/zon/${row.id}`);
+        router.delete(`/admin/zon/${row}`);
     });
 };
 </script>
@@ -81,7 +87,7 @@ const onDelete = (row) => {
         <template #title> Daerah </template>
 
         <template #headerActions>
-            <q-btn label="Tambah" color="primary" @click="onCreate" />
+            <q-btn label="Tambah" color="primary" @click="create" />
         </template>
 
         <template #breadcrumbs>
@@ -117,7 +123,7 @@ const onDelete = (row) => {
 
             <q-card-section>
                 <div class="flex items-center justify-between gap-4">
-                    <div>
+                    <div class="text-sm">
                         <div>
                             Jumlah Rekod: <strong>{{ districts.total }}</strong>
                         </div>
@@ -126,6 +132,22 @@ const onDelete = (row) => {
                             {{ districts.to }} /
                             {{ districts.total }}
                         </div>
+                    </div>
+                    <div>
+                        <q-select
+                            v-model="perPage"
+                            debounce="500"
+                            hide-bottom-space
+                            dense
+                            :options="[10, 25, 50, 100]"
+                            @update:model-value="
+                                router.get(
+                                    route.url(),
+                                    { per_page: perPage },
+                                    { preserveState: true, replace: true },
+                                )
+                            "
+                        ></q-select>
                     </div>
                     <q-pagination
                         v-model="currentPage"
@@ -138,6 +160,7 @@ const onDelete = (row) => {
                         :max-pages="5"
                         boundary-links
                         direction-links
+                        size="md"
                     />
                 </div>
             </q-card-section>
@@ -147,6 +170,7 @@ const onDelete = (row) => {
                 >
                     <th class="w-20 text-center">No.</th>
                     <th class="text-left">Nama Daerah</th>
+                    <th class="w-36 text-end"></th>
                 </thead>
                 <tbody>
                     <template
@@ -156,13 +180,13 @@ const onDelete = (row) => {
                         :key="`groupDistrict_${index}`"
                     >
                         <tr>
-                            <td colspan="2" class="bg-grey-6 font-semibold">
+                            <td colspan="3" class="bg-grey-6 font-semibold">
                                 {{ zone === '' ? 'Tanpa Zon' : zone }} ({{
-                                    districts.data.filter(
+                                    totalZoneByDistricts.find(
                                         (item) =>
-                                            item.zone_id ===
+                                            item.id ===
                                             listOfDistricts[0].zone_id,
-                                    ).length
+                                    )?.districts_count || 0
                                 }})
                             </td>
                         </tr>
@@ -172,16 +196,6 @@ const onDelete = (row) => {
                         >
                             <tr>
                                 <td class="text-center">
-                                    <!-- {{
-                                        (districts.current_page - 1) *
-                                            districts.per_page +
-                                        cumulativeIndex(
-                                            groupDistricts,
-                                            index,
-                                            index2,
-                                        ) +
-                                        1
-                                    }} -->
                                     {{
                                         (districts.current_page - 1) *
                                             districts.per_page +
@@ -197,6 +211,20 @@ const onDelete = (row) => {
                                     }}
                                 </td>
                                 <td>{{ district.name }}</td>
+                                <td>
+                                    <q-btn
+                                        flat
+                                        color="primary"
+                                        icon="mdi-pencil"
+                                        @click="edit(district)"
+                                    />
+                                    <q-btn
+                                        flat
+                                        color="negative"
+                                        icon="mdi-delete"
+                                        @click="destroy(district)"
+                                    />
+                                </td>
                             </tr>
                         </template>
                     </template>
@@ -204,7 +232,7 @@ const onDelete = (row) => {
             </q-markup-table>
             <q-card-section>
                 <div class="flex items-center justify-between gap-4">
-                    <div>
+                    <div class="text-sm">
                         <div>
                             Jumlah Rekod: <strong>{{ districts.total }}</strong>
                         </div>
@@ -213,6 +241,22 @@ const onDelete = (row) => {
                             {{ districts.to }} /
                             {{ districts.total }}
                         </div>
+                    </div>
+                    <div>
+                        <q-select
+                            v-model="perPage"
+                            debounce="500"
+                            hide-bottom-space
+                            dense
+                            :options="[10, 25, 50, 100]"
+                            @update:model-value="
+                                router.get(
+                                    route.url(),
+                                    { per_page: perPage },
+                                    { preserveState: true, replace: true },
+                                )
+                            "
+                        ></q-select>
                     </div>
                     <q-pagination
                         v-model="currentPage"
@@ -225,6 +269,7 @@ const onDelete = (row) => {
                         :max-pages="5"
                         boundary-links
                         direction-links
+                        size="md"
                     />
                 </div>
             </q-card-section>

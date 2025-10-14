@@ -1,6 +1,5 @@
 <script setup>
 import GuestLayout from '@/layouts/GuestLayout.vue';
-import { store } from '@/routes/guest/login';
 import { useForm, usePage } from '@inertiajs/vue3';
 import { useQuasar } from 'quasar';
 import { onMounted, ref } from 'vue';
@@ -34,7 +33,7 @@ const isPwd = ref(true);
 
 const login = () => {
     $q.loading.show();
-    form.post(store(), {
+    form.post('/login', {
         onError: (err) => {
             $q.notify({
                 type: 'negative',
