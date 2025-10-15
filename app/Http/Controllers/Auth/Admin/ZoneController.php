@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\District;
 use App\Models\Zone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -21,9 +22,11 @@ class ZoneController extends Controller
                 $query->where('name', 'like', '%' . request()->query('carian') . '%');
             })
             ->select('id', 'color', 'name')
+            ->withCount('districts')
             ->paginate(request()->query('per_page'), ['*'], 'page')
             ->withQueryString();
-        return Inertia::render('Auth/Zone/Index', compact('zones'));
+        $noZones = District::query()->whereNull('zone_id')->count();
+        return Inertia::render('Auth/Zone/Index', compact('zones', 'noZones'));
     }
 
     /**

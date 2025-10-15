@@ -12,7 +12,6 @@ return new class extends Migration {
     {
         Schema::create('appoint_statuses', function (Blueprint $table) {
             $table->id();
-            $table->string('slug')->unique();
             $table->tinyInteger('code')->unique();
             $table->string('name')->unique();
             $table->timestamps();

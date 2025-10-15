@@ -12,7 +12,6 @@ return new class extends Migration {
     {
         Schema::create('races', function (Blueprint $table) {
             $table->id();
-            $table->string('slug')->unique();
             $table->string('name')->unique();
             $table->timestamps();
         });

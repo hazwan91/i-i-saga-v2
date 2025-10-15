@@ -14,7 +14,6 @@ return new class extends Migration {
         Schema::create('stations', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Department::class)->nullable();
-            $table->string('slug')->unique();
             $table->string('code', 10)->nullable();
             $table->string('name')->nullable();
             $table->text('address')->nullable();

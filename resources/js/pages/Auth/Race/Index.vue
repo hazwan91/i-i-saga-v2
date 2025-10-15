@@ -1,8 +1,9 @@
 <script setup>
-import QBaseTable from '@/components/QBaseTable.vue';
 import AuthLayout from '@/layouts/AuthLayout.vue';
+import { routeHelper as route } from '@/utils/route';
 import { router } from '@inertiajs/vue3';
 import { useQuasar } from 'quasar';
+import { ref } from 'vue';
 import _Form from './_Form.vue';
 
 const $q = useQuasar();
@@ -14,12 +15,12 @@ const props = defineProps({
     },
 });
 
-const columns = [
-    { name: 'name', label: 'Nama Bangsa', field: 'name', align: 'left' },
-    { name: 'actions', label: '', align: 'right' },
-];
+const search = ref(route.query().carian || '');
+const perPage = ref(route.query().per_page || 10);
+const currentPage = ref(props.races.current_page);
+const filters = ref({});
 
-const onCreate = () => {
+const create = () => {
     $q.dialog({
         component: _Form,
         componentProps: {
@@ -28,7 +29,7 @@ const onCreate = () => {
     });
 };
 
-const onEdit = (row) => {
+const edit = (row) => {
     $q.dialog({
         component: _Form,
         componentProps: {
@@ -38,13 +39,16 @@ const onEdit = (row) => {
     });
 };
 
-const onDelete = (row) => {
+const destroy = (row) => {
     $q.dialog({
         title: 'Peringatan',
         message: 'Adakah anda pasti untuk memadam data ini?',
         cancel: true,
     }).onOk(() => {
-        router.delete(`/admin/bangsa/${row.id}`);
+        router.delete(`/admin/bangsa/${row.id}`, {
+            preserveState: true,
+            preserveScroll: true,
+        });
     });
 };
 </script>
@@ -54,18 +58,177 @@ const onDelete = (row) => {
         <template #title> Bangsa </template>
 
         <template #headerActions>
-            <q-btn label="Tambah" color="primary" @click="onCreate" />
+            <q-btn label="Tambah" color="primary" @click="create" />
         </template>
 
         <template #breadcrumbs>
             <q-breadcrumbs-el label="Bangsa"></q-breadcrumbs-el>
         </template>
 
-        <QBaseTable
-            :rows="races"
-            :columns="columns"
-            @edit="onEdit"
-            @delete="onDelete"
-        ></QBaseTable>
+        <q-card class="rounded-xl shadow-md">
+            <q-card-section class="row items-center justify-between">
+                <div class="text-xl">Senarai</div>
+                <div>
+                    <q-input
+                        v-model="search"
+                        debounce="500"
+                        outlined
+                        hide-bottom-space
+                        placeholder="Cari Bangsa..."
+                        dense
+                        @update:model-value="
+                            router.get(
+                                route.url(),
+                                { carian: search },
+                                { preserveState: true, replace: true },
+                            )
+                        "
+                    >
+                        <template #append>
+                            <q-icon name="mdi-magnify" />
+                        </template>
+                    </q-input>
+                </div>
+            </q-card-section>
+
+            <q-card-section>
+                <div class="flex items-center justify-between gap-4">
+                    <div class="text-sm">
+                        <div>
+                            Jumlah Rekod:
+                            <strong>{{ races.total }}</strong>
+                        </div>
+                        <div>
+                            Dipaparkan {{ races.from }} - {{ races.to }} /
+                            {{ races.total }}
+                        </div>
+                    </div>
+                    <div>
+                        <q-select
+                            v-model="perPage"
+                            debounce="500"
+                            hide-bottom-space
+                            dense
+                            :options="[10, 25, 50, 100]"
+                            @update:model-value="
+                                router.get(
+                                    route.url(),
+                                    { per_page: perPage },
+                                    { preserveState: true, replace: true },
+                                )
+                            "
+                        ></q-select>
+                    </div>
+                    <q-pagination
+                        v-model="currentPage"
+                        color="primary"
+                        outline
+                        active-design="unelevated"
+                        active-color="brown"
+                        active-text-color="orange"
+                        :max="races.last_page"
+                        :max-pages="5"
+                        boundary-links
+                        direction-links
+                        size="md"
+                        @update:model-value="
+                            router.get(
+                                route.url(),
+                                { laman: currentPage },
+                                { preserveState: true, replace: true },
+                            )
+                        "
+                    />
+                </div>
+            </q-card-section>
+            <q-markup-table separator="cell" flat bordered>
+                <thead
+                    :class="`h-12 uppercase ${$q.dark.isActive ? 'bg-grey-8' : 'bg-grey-4'}`"
+                >
+                    <tr>
+                        <th class="w-20 text-center">No.</th>
+                        <th class="text-left">Nama Bangsa</th>
+                        <th class="w-36 text-end">&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template
+                        v-for="([key, race], indexLoop) in Object.entries(
+                            races.data,
+                        )"
+                        :key="`race_${indexLoop}`"
+                    >
+                        <tr>
+                            <td class="text-center">{{ indexLoop + 1 }}</td>
+                            <td>{{ race.name }}</td>
+                            <td>
+                                <q-btn
+                                    flat
+                                    color="primary"
+                                    icon="mdi-pencil"
+                                    @click="edit(race)"
+                                />
+                                <q-btn
+                                    flat
+                                    color="negative"
+                                    icon="mdi-delete"
+                                    @click="destroy(race)"
+                                />
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </q-markup-table>
+            <q-card-section>
+                <div class="flex items-center justify-between gap-4">
+                    <div class="text-sm">
+                        <div>
+                            Jumlah Rekod:
+                            <strong>{{ races.total }}</strong>
+                        </div>
+                        <div>
+                            Dipaparkan {{ races.from }} - {{ races.to }} /
+                            {{ races.total }}
+                        </div>
+                    </div>
+                    <div>
+                        <q-select
+                            v-model="perPage"
+                            debounce="500"
+                            hide-bottom-space
+                            dense
+                            :options="[10, 25, 50, 100]"
+                            @update:model-value="
+                                router.get(
+                                    route.url(),
+                                    { per_page: perPage },
+                                    { preserveState: true, replace: true },
+                                )
+                            "
+                        ></q-select>
+                    </div>
+                    <q-pagination
+                        v-model="currentPage"
+                        color="primary"
+                        outline
+                        active-design="unelevated"
+                        active-color="brown"
+                        active-text-color="orange"
+                        :max="races.last_page"
+                        :max-pages="5"
+                        boundary-links
+                        direction-links
+                        size="md"
+                        @update:model-value="
+                            router.get(
+                                route.url(),
+                                { laman: currentPage },
+                                { preserveState: true, replace: true },
+                            )
+                        "
+                    />
+                </div>
+            </q-card-section>
+        </q-card>
     </AuthLayout>
 </template>

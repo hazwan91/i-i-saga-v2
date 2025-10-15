@@ -21,7 +21,7 @@ class RaceController extends Controller
                 $query->where('name', 'like', '%' . request()->query('carian') . '%');
             })
             ->select('id', 'name')
-            ->paginate(request()->query('per_page'), ['*'], 'page')
+            ->paginate(request()->query('per_page'), ['*'], 'laman')
             ->withQueryString();
         return Inertia::render('Auth/Race/Index', compact('races'));
     }

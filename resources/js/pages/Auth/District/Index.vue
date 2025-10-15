@@ -197,16 +197,18 @@ const destroy = (row) => {
                 <thead
                     :class="`h-12 uppercase ${$q.dark.isActive ? 'bg-grey-8' : 'bg-grey-4'}`"
                 >
-                    <th class="w-20 text-center">No.</th>
-                    <th class="text-left">Nama Daerah</th>
-                    <th class="w-36 text-end"></th>
+                    <tr>
+                        <th class="w-20 text-center">No.</th>
+                        <th class="text-left">Nama Daerah</th>
+                        <th class="w-36 text-end"></th>
+                    </tr>
                 </thead>
                 <tbody>
                     <template
                         v-for="(
-                            [zone, listOfDistricts], index
+                            [zone, listOfDistricts], indexLoop
                         ) in Object.entries(groupDistricts)"
-                        :key="`groupDistrict_${index}`"
+                        :key="`groupDistrict_${indexLoop}`"
                     >
                         <tr>
                             <td
@@ -232,8 +234,8 @@ const destroy = (row) => {
                             </td>
                         </tr>
                         <template
-                            v-for="(district, index2) in listOfDistricts"
-                            :key="`district_${index2}`"
+                            v-for="(district, indexLoop2) in listOfDistricts"
+                            :key="`district_${indexLoop2}`"
                         >
                             <tr>
                                 <td class="text-center">
@@ -241,13 +243,13 @@ const destroy = (row) => {
                                         (districts.current_page - 1) *
                                             districts.per_page +
                                         Object.entries(groupDistricts)
-                                            .slice(0, index)
+                                            .slice(0, indexLoop)
                                             .reduce(
                                                 (sum, [, districts]) =>
                                                     sum + districts.length,
                                                 0,
                                             ) +
-                                        index2 +
+                                        indexLoop2 +
                                         1
                                     }}
                                 </td>

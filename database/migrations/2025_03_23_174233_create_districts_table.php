@@ -13,7 +13,6 @@ return new class extends Migration {
     {
         Schema::create('districts', function (Blueprint $table) {
             $table->id();
-            $table->string('slug')->unique();
             $table->foreignIdFor(Zone::class)->nullable();
             $table->string('name')->unique();
             $table->timestamps();

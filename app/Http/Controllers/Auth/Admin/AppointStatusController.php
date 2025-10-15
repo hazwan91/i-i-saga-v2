@@ -22,7 +22,7 @@ class AppointStatusController extends Controller
                     ->orWhere('name', 'like', '%' . request()->query('carian') . '%');
             })
             ->select('id', 'code', 'name')
-            ->paginate(request()->query('per_page'), ['*'], 'page')
+            ->paginate(request()->query('per_page'), ['*'], 'laman')
             ->withQueryString();
         return Inertia::render('Auth/AppointStatus/Index', compact('appointStatuses'));
     }

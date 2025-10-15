@@ -22,7 +22,9 @@ class DepartmentTypeController extends Controller
                     ->orWhere('name', 'like', '%' . request()->query('carian') . '%');
             })
             ->select('id', 'code', 'name')
-            ->paginate(request()->query('per_page'), ['*'], 'page')
+            ->withCount('departments')
+            ->withCount('stations')
+            ->paginate(request()->query('per_page'), ['*'], 'laman')
             ->withQueryString();
         return Inertia::render('Auth/DepartmentType/Index', compact('departmentTypes'));
     }

@@ -12,7 +12,6 @@ return new class extends Migration {
     {
         Schema::create('department_types', function (Blueprint $table) {
             $table->id();
-            $table->string('slug')->unique();
             $table->string('code', 10)->unique();
             $table->string('name')->unique();
             $table->timestamps();

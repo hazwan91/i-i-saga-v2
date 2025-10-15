@@ -28,8 +28,8 @@ class DistrictController extends Controller
                     $query->where('zone_id', '=', request()->query('zon'));
                 }
             })
-            ->leftJoin('zones', 'districts.zone_id', '=', 'zones.id')
             ->select('districts.id', 'districts.zone_id', 'districts.name', 'zones.name as zone_name', 'zones.color as zone_color')
+            ->leftJoin('zones', 'districts.zone_id', '=', 'zones.id')
             ->orderBy('zones.name', 'asc')
             ->paginate(request()->query('per_page') ?? 10, ['*'], 'laman')
             ->withQueryString();
