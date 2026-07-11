@@ -112,6 +112,63 @@ return [
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
 
+        'sm2viewlogin' => [
+            'driver' => 'sqlsrv',
+            // 'url' => '10.71.99.2',
+            'host' => '10.71.99.2',
+            'port' => '1433',
+            'database' => 'NewSmapan',
+            'username' => 'mobile_ecuti',
+            'password' => 'm_eleave@jpkn',
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'true'),
+        ],
+
+        'eriasm2' => [
+            'driver' => 'sqlsrv',
+            // 'url' => '10.71.99.2',
+            'host' => '10.71.99.2',
+            'port' => '1433',
+            'database' => 'NewSmapan',
+            'username' => 'eRiasa',
+            'password' => 'JPAN(RIA)',
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'true'),
+        ],
+
+        'jpansrv' => [
+            'driver' => 'sqlsrv',
+            // 'url' => '10.71.99.2',
+            'host' => '10.71.99.2',
+            'port' => '1433',
+            'database' => 'NewSmapan',
+            'username' => 'JPANSrv',
+            'password' => 'dgd(2021)',
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'true'),
+        ],
+
+        'ebitk' => [
+            'driver' => 'sqlsrv',
+            // 'url' => '10.71.99.2',
+            'host' => '10.71.99.2',
+            'port' => '1433',
+            'database' => 'Penilaian',
+            'username' => 'eBITKsa',
+            'password' => 'eB1tk123**',
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'true'),
+            // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', true),
+        ]
+
     ],
 
     /*
@@ -147,7 +204,7 @@ return [
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
-            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
+            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_') . '_database_'),
             'persistent' => env('REDIS_PERSISTENT', false),
         ],
 

@@ -13,8 +13,9 @@ return new class extends Migration {
     {
         Schema::create('districts', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Zone::class)->nullable();
+            $table->foreignId('zone_id')->nullable()->constrained('zones')->restrictOnDelete();
             $table->string('name')->unique();
+
             $table->timestamps();
         });
     }

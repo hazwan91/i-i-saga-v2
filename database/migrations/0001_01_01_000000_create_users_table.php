@@ -15,7 +15,9 @@ return new class extends Migration {
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('slug')->unique();
+            $table->foreignId('department_id')->nullable()->constrained('departments')->restrictOnDelete();
+            $table->foreignId('station_id')->nullable()->constrained('stations')->restrictOnDelete();
+            $table->foreignId('appoint_status_id')->nullable()->constrained('appoint_statuses')->restrictOnDelete();
             $table->string('role');
             $table->string('type', 20);
             $table->string('other_type')->nullable();
